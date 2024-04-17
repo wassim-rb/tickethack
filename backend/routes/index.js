@@ -8,6 +8,8 @@ const Cart = require('../models/carts');
 
 
 
+
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -17,19 +19,21 @@ router.get('/', function(req, res, next) {
 router.get('/trips/:departure/:arrival/:date', async (req, res) => {
   const { departure, arrival, date } = req.params;
 
-  
+   
   if (!departure || !arrival || !date) {
     return res.send('Departure, arrival, and date must be provided.');
   }
 
   const searchDate = new Date(date);
+  searchDate.setUTCHours(0, 0, 0, 0);
   console.log(searchDate)
 
   const endDate = new Date(date);
+  endDate.setUTCHours(23, 59, 59, 999);
   console.log(endDate)
  
     const availableTrips = await Trip.find({
-     departure: departure,
+      departure: departure,
       arrival: arrival,
       date: {
         $gte: searchDate,
@@ -47,50 +51,82 @@ router.get('/trips/:departure/:arrival/:date', async (req, res) => {
 });
 
 
-
-
-
-
 /* POST trips in cart */
-router.post('/cart', (req, res) => {
+router.post('/cart', async (req, res) => {
+    
+    const tripId = req.body._id;
+    const trip = await Trip.findById(tripId);
 
-  // Get trip ID and find trip by ID
-  const tripId = req.body._id;
-  const trip = Trip.findById(tripId);
-
-  if (!trip){
-            return res.json({result : false, error: 'No ticket in your cart'});
-            }
-
-   let cart = Cart({ trips: [], total: 0 }); // create cart
-
-   cart.trips.push(trip._id); //push trip
-   cart.total += trip.price; //increment total
+    if (!trip) {
+      return res.json({ result: false, error: 'No ticket found with the given ID' });
+    }
    
-   cart.save();
-   res.json({ result: true, cart : cart});
-})
+    let cart = await new Cart({ trips: [], total: 0 });
 
+    
+    cart.trips.push(trip._id);
+    cart.total += trip.price;
+    
+    await cart.save();
+    
+    const response = {
+      result: true,
+      cart: {
+        departure: trip.departure,
+        arrival: trip.arrival,
+        price: trip.price,
+        total: cart.total,
+        _id: cart._id,
+        __v: cart.__v
+      }
+    };  
+    res.json(response);
+});
 
 /* POST trips in booking */
-router.post('/bookings', (req, res) => {
-
-  // Get trip ID and find trip by ID
+router.post('/booking', async (req, res) => {
+    
   const tripId = req.body._id;
-  const trip = Trip.findById(tripId);
+  const trip = await Trip.findById(tripId);
 
-  if (!trip){
-            return res.json({result : false, erro :'No ticket in your cart'});
-            }
+  if (!trip) {
+    return res.json({ result: false, error: 'No booking found with the given ID' });
+  }
+  
+  let booking = await new Booking({ trips: []});
+  
+  booking.trips.push(trip._id);
+  
+  await booking.save();
 
-   let booking = Booking({ trips: [], departure: trips.date }); // create bookint
+  const response = {
+    result: true,
+    booking: {
+      departure: trip.departure,
+      arrival: trip.arrival,
+      price: trip.price,
+      _id: booking._id,
+    }
+  };
 
-   booking.trips.push(trip._id); //push trip
-   booking.departure = trips.date; //revoke date
-   
-   booking.save();
-   res.json({ result: true, booking : booking});
-})
+  res.json(response);
+});
+
+
+
+
+/* DELETE trips in cart 
+router.delete('/cart/:_id', async (req, res) => {
+  const searchedTrip = Cart.find(e => e._id === req.params._id);
+  
+ if (searchedTrip) {
+    Cart = Cart.filter(e => e._id !== req.params._id);
+    res.json({ result: true, Cart });
+  } else {
+    res.json({ result: false, error: 'Trip not found' });
+  }
+});*/
+
 
 
 
