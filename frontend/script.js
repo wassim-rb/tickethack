@@ -18,7 +18,7 @@ document.querySelector('#rechercher').addEventListener('click',() =>  {
     } else {
         let result = '';
         for (let i = 0 ; i < 9 ; i++) {
-            result += `<div class="resultTrajet">
+            result += `<div class="resultTrajet" id="trajet${i}">
             <div>Paris > Lyon</div>
             <div id="heure">18:33</div>
             <div id="prix">103€</div>
@@ -29,6 +29,18 @@ document.querySelector('#rechercher').addEventListener('click',() =>  {
        console.log(result)
         
         document.querySelector('.results').innerHTML = result;
+
+        document.querySelectorAll('.resultTrajet')
+
+        const trajets = document.querySelectorAll(".resultTrajet");
+
+        for (let i = 0; i < trajets.length; i++) {
+            trajets[i].addEventListener("click", function() {
+            console.log(trajets[i]);
+            window.location.href = "cart.html";
+
+            });
+        }
         // document.querySelectorAll('.resultTrajet').style.height = "600px";
         // document.querySelectorAll('.resultTrajet').setAttribute("style","height:20%")
         // document.querySelector('#timeToBook').textContent = document.querySelector('#search-bar').value;

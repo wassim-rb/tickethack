@@ -72,3 +72,61 @@ body {
     padding-bottom: 20px;
 }
 
+/* --------------------------------Container rempli------------------------------------------------ */
+
+.trajetLine {
+    display : flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width : 80%;
+    background-color: #f4eded;
+    font-weight : bold;
+    padding : 0 5px;
+    border-radius: 5px;
+    margin : 5px 0;
+}
+
+
+.trajet {
+    width : 20%;
+}
+
+.prix {
+    width : 10%;
+}
+
+
+
+
+.totalLine {
+    display : flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width : 100%;
+    background-color:rgb(7, 11, 88);
+    margin-top : 10px;
+
+    border-bottom-left-radius: 5px;  
+    border-bottom-right-radius: 5px;  
+    
+
+}
+
+.total {
+    margin-left : 7%;
+    color : white;
+}
+
+
+
+#mybook {
+    font-weight: bold;
+}
+
+#enjoy {
+    color : green;
+    opacity: 0.5;
+    font-weight: 800;
+}
